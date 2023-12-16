@@ -1,0 +1,58 @@
+#include <GL/glut.h>
+
+// Global variables
+GLfloat rotationAngle = 0.0f;
+
+void init() {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the background color to black
+}
+
+void reshape(int width, int height) {
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height); // Set the viewport to the entire window
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 1.0f, 100.0f); // Set the perspective projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f); // Set the camera position
+
+    // Draw the sun
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glutSolidSphere(1.0f, 20, 20);
+
+    // Draw the Earth
+    glRotatef(rotationAngle, 0.0f, 1.0f, 0.0f); // Rotate the Earth around the sun
+    glTranslatef(3.0f, 0.0f, 0.0f); // Translate to the Earth's position
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glutSolidSphere(0.5f, 20, 20);
+
+    glutSwapBuffers();
+}
+
+void update(int value) {
+    rotationAngle += 1.0f; // Update the rotation angle for animation
+    if (rotationAngle > 360) {
+        rotationAngle -= 360;
+    }
+    glutPostRedisplay();
+    glutTimerFunc(25, update, 0);
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("Solar System Model");
+    init();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutTimerFunc(25, update, 0);
+    glutMainLoop();
+    return 0;
+}
